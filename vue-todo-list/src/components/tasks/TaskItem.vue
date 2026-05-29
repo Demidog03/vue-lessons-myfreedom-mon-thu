@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Task } from '@/types/tasks.types';
+import { onUnmounted } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     task: Task,
 }>()
 
@@ -10,6 +11,10 @@ const emits = defineEmits<{
     returnTask: [id: string],
     removeTask: [id: string],
 }>()
+
+onUnmounted(() => {
+    console.log(`task item - ${props.task.id} умер`)
+})
 </script>
 
 <template>

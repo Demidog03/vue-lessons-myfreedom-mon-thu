@@ -4,6 +4,9 @@
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "target": "es2025",
+    // Override the `lib` from @vue/tsconfig (ES2022) so newer built-ins like
+    // Array.prototype.toReversed (ES2023) are typed. DOM libs kept from the base.
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     // Extra safety for array and object lookups, but may have false positives.
     "noUncheckedIndexedAccess": true,
 

@@ -1,32 +1,39 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import TaskItem from './components/tasks/TaskItem.vue';
 import type { Task } from './types/tasks.types';
 import TaskForm from './components/tasks/TaskForm.vue';
 
-const tasks = ref<Task[]>([
-  {
-    id: '1',
-    title: 'Задача 1',
-    isCompleted: false
-  },
-  {
-    id: '2',
-    title: 'Задача 2',
-    isCompleted: true
-  },
-  {
-    id: '3',
-    title: 'Задача 3',
-    isCompleted: false
-  }
-])
+const testRef = ref('Hello')
+const tasks = ref<Task[]>([])
 
 const activeTasksLength = computed(() => tasks.value.filter(t => t.isCompleted === false).length || 0)
 const completedTasksLength = computed(() => tasks.value.filter(t => t.isCompleted === true).length || 0)
 
+onMounted(() => {
+  console.log('Первый рендер компонента App.vue')
+  const lsTasksJson = localStorage.getItem('tasks')
+
+  if (lsTasksJson) {
+    tasks.value = JSON.parse(lsTasksJson)
+  }
+})
+
+watch(tasks, () => {
+  localStorage.setItem('tasks', JSON.stringify(tasks.value))
+}, { deep: true }) // immediate: true - запусти даже при первом рендере
+
+watch(testRef, () => {
+  console.log(testRef.value)
+})
+
+// watchEffect(() => {
+//   localStorage.setItem('tasks', JSON.stringify(tasks.value))
+// })
+
 function createTask(newTask: Task) {
   tasks.value.push(newTask)
+  testRef.value = 'Hi'
 }
 
 function removeTask(id: string) {
@@ -60,7 +67,8 @@ function returnTask(id: string) {
     <section class="tasks-section">
       <p class="tasks-amount-task">Количество задач: {{ activeTasksLength }} активные, {{ completedTasksLength }}
         завершенные</p>
-      <ul class="tasks-list">
+      <p v-if="tasks.length <= 0" class="no-tasks-text">Нет задач...</p>
+      <ul v-if="tasks.length > 0" class="tasks-list">
         <!-- v-for - директива для маппинга элементов -->
         <TaskItem v-for="task in tasks.toReversed()" v-bind:key="task.id" :task="task" @complete-task="completeTask"
           @remove-task="removeTask" @return-task="returnTask" />
@@ -94,6 +102,15 @@ function returnTask(id: string) {
 }
 
 /* tasks section */
+.no-tasks-text {
+  text-align: center;
+  color: #223125;
+  font-size: 1.25rem;
+  font-weight: 600;
+  opacity: 0.5;
+}
+
+
 .tasks-list {
   list-style-type: none;
   display: flex;
