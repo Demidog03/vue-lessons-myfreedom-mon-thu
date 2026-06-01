@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Task } from '@/types/tasks.types';
+import type { Task } from '@/modules/tasks/types/tasks.types';
 import { onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
     task: Task,
@@ -12,13 +13,20 @@ const emits = defineEmits<{
     removeTask: [id: string],
 }>()
 
+const router = useRouter()
+
 onUnmounted(() => {
     console.log(`task item - ${props.task.id} умер`)
 })
+
+function goToTaskDetailsPage() {
+    router.push(`/tasks/${props.task.id}`)
+}
+
 </script>
 
 <template>
-    <li :class="task.isCompleted ? 'completed' : 'active'">
+    <li @click.self="goToTaskDetailsPage" :class="task.isCompleted ? 'completed' : 'active'">
         <span>{{ task.title }}</span>
         <div class="buttons-container">
             <!-- conditional render - отрисовка по условию -->
@@ -41,14 +49,23 @@ onUnmounted(() => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
 }
 
 .tasks-list li.completed {
     background-color: #99ce99;
 }
 
+.tasks-list li.completed:hover {
+    background-color: #719671;
+}
+
 .tasks-list li.active {
     background-color: #A1C0C2;
+}
+
+.tasks-list li.active:hover {
+    background-color: #7d9c9e;
 }
 
 .buttons-container {

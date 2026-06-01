@@ -1,18 +1,27 @@
-import Page1 from '@/pages/Page1.vue'
-import Page2 from '@/pages/Page2.vue'
+import TasksDetailsPage from '@/pages/tasks-details/TasksDetailsPage.vue'
+import TasksPage from '@/pages/tasks/TasksPage.vue'
+import TestPage from '@/pages/test/TestPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/page1',
-    //   component: Page1
-    // },
-    // {
-    //   path: '/page2',
-    //   component: Page2
-    // }
+    {
+      path: '/',
+      redirect: '/tasks'
+    },
+    {
+      path: '/tasks',
+      component: TasksPage
+    },
+    {
+      path: '/tasks/:id', // /:id => динамический роут
+      component: TasksDetailsPage
+    },
+    {
+      path: '/test',
+      component: TestPage
+    }
   ],
 })
 

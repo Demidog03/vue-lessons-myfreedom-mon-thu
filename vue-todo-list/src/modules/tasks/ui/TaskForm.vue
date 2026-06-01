@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { v4 as uuidv4 } from "uuid";
-import type { Task } from '@/types/tasks.types';
+import type { Task } from '@/modules/tasks/types/tasks.types';
 import { computed, ref } from 'vue';
 
 const emits = defineEmits<{

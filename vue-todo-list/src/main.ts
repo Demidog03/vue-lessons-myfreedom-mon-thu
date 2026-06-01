@@ -9,6 +9,6 @@ const app = createApp(App)
 app.use(router)
 
 // scan
-app.use<VueScanOptions>(VueScan, {})
+// app.use<VueScanOptions>(VueScan, {})
 
 app.mount('#app')
