@@ -8,3 +8,13 @@
 body {
     background-color: #F6F6F6;
 }
+
+.container {
+    max-width: 800px;
+    margin-inline: auto;
+    padding: 30px 10px;
+}
+
+:root {
+  --main-green-color: #223125;
+}

@@ -2,7 +2,7 @@ import './style.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import VueScan, { type VueScanOptions } from 'z-vue-scan'
+// import VueScan, { type VueScanOptions } from 'z-vue-scan'
 
 const app = createApp(App)
 
