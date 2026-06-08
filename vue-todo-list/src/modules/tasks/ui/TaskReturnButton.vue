@@ -8,7 +8,7 @@ const returnTask = inject<(id: string) => void>(TASK_PROVIDE_KEYS.returnTask)
 </script>
 
 <template>
-  <button v-if="task?.isCompleted === true" @click="() => (returnTask && task) && returnTask(task.id)"
+  <button v-if="task?.completed === true" @click="() => (returnTask && task) && returnTask(task.id)"
     class="task-completed-btn">Выполнено</button>
 </template>
 

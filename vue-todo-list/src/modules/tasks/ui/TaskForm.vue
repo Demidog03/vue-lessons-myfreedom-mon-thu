@@ -24,7 +24,7 @@ function createTaskLocal() {
     id: uuidv4(),
     title: taskInput.value.trim(),
     description: taskDescription.value.trim() || null,
-    isCompleted: false
+    completed: false
   }
 
   emits('createTask', newTask)

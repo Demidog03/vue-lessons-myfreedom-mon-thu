@@ -8,7 +8,7 @@ const completeTask = inject<(id: string) => void>(TASK_PROVIDE_KEYS.completeTask
 </script>
 
 <template>
-  <button v-if="task?.isCompleted === false" @click="() => (completeTask && task) && completeTask(task.id)"
+  <button v-if="task?.completed === false" @click="() => (completeTask && task) && completeTask(task.id)"
     class="task-active-btn">Выполнить</button>
 </template>
 

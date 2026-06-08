@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Task } from '@/modules/tasks/types/tasks.types';
-import { onUnmounted, provide } from 'vue';
+import { onUnmounted, provide, toRef } from 'vue';
 import { useRouter } from 'vue-router';
 import TaskCompleteButton from './TaskCompleteButton.vue';
 import TaskReturnButton from './TaskReturnButton.vue';
@@ -11,7 +11,7 @@ const props = defineProps<{
   task: Task,
 }>()
 
-provide(TASK_PROVIDE_KEYS.task, props.task)
+provide(TASK_PROVIDE_KEYS.task, toRef(props, 'task'))
 
 const router = useRouter()
 
@@ -26,7 +26,7 @@ function goToTaskDetailsPage() {
 </script>
 
 <template>
-  <li @click.self="goToTaskDetailsPage" :class="task.isCompleted ? 'completed' : 'active'">
+  <li @click.self="goToTaskDetailsPage" :class="task.completed ? 'completed' : 'active'">
     <span>{{ task.title }}</span>
     <div class="buttons-container">
       <!-- conditional render - отрисовка по условию -->

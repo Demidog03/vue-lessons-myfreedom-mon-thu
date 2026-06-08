@@ -3,10 +3,11 @@ import useTasks from '@/modules/tasks/composables/useTasks';
 import { TASK_PROVIDE_KEYS } from '@/modules/tasks/contants/tasks.constants';
 import TaskForm from '@/modules/tasks/ui/TaskForm.vue';
 import TaskItem from '@/modules/tasks/ui/TaskItem.vue';
+import FullscreenSpinner from '@/shared/ui/FullscreenSpinner.vue';
 import RouterButton from '@/shared/ui/RouterButton.vue';
 import { provide } from 'vue';
 
-const { tasks, activeTasksLength, completedTasksLength, completeTask, createTask, removeTask, returnTask } = useTasks()
+const { tasks, isLoading, activeTasksLength, completedTasksLength, completeTask, createTask, removeTask, returnTask } = useTasks()
 
 provide(TASK_PROVIDE_KEYS.completeTask, completeTask)
 provide(TASK_PROVIDE_KEYS.removeTask, removeTask)
@@ -27,9 +28,10 @@ provide(TASK_PROVIDE_KEYS.returnTask, returnTask)
       <p v-if="tasks.length <= 0" class="no-tasks-text">Нет задач...</p>
       <ul v-if="tasks.length > 0" class="tasks-list">
         <!-- v-for - директива для маппинга элементов -->
-        <TaskItem v-for="task in tasks.toReversed()" v-bind:key="task.id" :task="task" />
+        <TaskItem v-for="task in tasks" v-bind:key="task.id" :task="task" />
       </ul>
     </section>
+    <FullscreenSpinner :is-loading="isLoading" />
   </main>
 </template>
 

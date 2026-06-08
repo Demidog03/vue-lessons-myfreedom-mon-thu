@@ -1,51 +1,97 @@
 import type { Task } from "@/modules/tasks/types/tasks.types"
-import { computed, onMounted } from "vue"
-import useLocalStorageRef from "../../../shared/composables/useLocalStorageRef"
+import { computed, onMounted, ref } from "vue"
+import tasksApi from "../api/tasks.api"
 
 export default function useTasks() {
-    const tasks = useLocalStorageRef<Task[]>('tasks', [])
-    const language = useLocalStorageRef<string>('language', 'english')
+  const tasks = ref<Task[]>([])
+  const isLoading = ref<boolean>(false)
 
-    const activeTasksLength = computed(() => tasks.value.filter(t => t.isCompleted === false).length || 0)
-    const completedTasksLength = computed(() => tasks.value.filter(t => t.isCompleted === true).length || 0)
+  const activeTasksLength = computed(() => tasks.value.filter(t => t.completed === false).length || 0)
+  const completedTasksLength = computed(() => tasks.value.filter(t => t.completed === true).length || 0)
 
-    onMounted(() => {
-        console.log('Первый рендер компонента App.vue')
-    })
+  onMounted(async () => {
+    await getTasks()
+  })
 
-    function createTask(newTask: Task) {
-        tasks.value.push(newTask)
+  function startLoading() {
+    isLoading.value = true
+  }
 
-        language.value = 'kazakh'
+  function stopLoading() {
+    isLoading.value = false
+  }
+
+  async function getTasks() {
+    try {
+      startLoading()
+      // При первом рендере пытаемся получить данные с сервера и присвоить к реактивному массиву
+      const data = await tasksApi.getTasks()
+      tasks.value = data.data
+    }
+    finally {
+      stopLoading()
+    }
+  }
+
+  async function createTask(newTask: Task) {
+    try {
+      startLoading()
+      await tasksApi.createTask({
+        title: newTask.title,
+        description: newTask.description
+      })
+    }
+    finally {
+      stopLoading()
     }
 
-    function removeTask(id: string) {
-        tasks.value = tasks.value.filter(t => t.id !== id)
+    await getTasks()
+  }
+
+  async function removeTask(id: string) {
+    try {
+      startLoading()
+      await tasksApi.removeTask(id)
+    }
+    finally {
+      stopLoading()
     }
 
-    function completeTask(id: string) {
-        const taskToComplete = tasks.value.find(t => t.id === id)
+    await getTasks()
+  }
 
-        if (taskToComplete) {
-            taskToComplete.isCompleted = true
-        }
+  async function completeTask(id: string) {
+    try {
+      startLoading()
+      await tasksApi.changeTaskStatus(id, true)
+    }
+    finally {
+      stopLoading()
     }
 
-    function returnTask(id: string) {
-        const taskToComplete = tasks.value.find(t => t.id === id)
+    await getTasks()
+  }
 
-        if (taskToComplete) {
-            taskToComplete.isCompleted = false
-        }
+  async function returnTask(id: string) {
+    try {
+      startLoading()
+      await tasksApi.changeTaskStatus(id, false)
+    }
+    finally {
+      stopLoading()
     }
 
-    return {
-        tasks,
-        activeTasksLength,
-        completedTasksLength,
-        createTask,
-        returnTask,
-        removeTask,
-        completeTask
-    }
+    await getTasks()
+  }
+
+  return {
+    tasks,
+    activeTasksLength,
+    completedTasksLength,
+    isLoading,
+    createTask,
+    returnTask,
+    removeTask,
+    completeTask,
+  }
 }
