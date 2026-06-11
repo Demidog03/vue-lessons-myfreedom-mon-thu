@@ -1,33 +1,20 @@
 <script setup lang="ts">
-import useTaskDetails from '@/modules/tasks/composables/useTaskDetails';
 import { TASK_PROVIDE_KEYS } from '@/modules/tasks/contants/tasks.constants';
+import useGetTaskDetailsQuery from '@/modules/tasks/queries/useGetTaskDetailsQuery';
 import TaskCompleteButton from '@/modules/tasks/ui/TaskCompleteButton.vue';
 import TaskRemoveButton from '@/modules/tasks/ui/TaskRemoveButton.vue';
 import TaskReturnButton from '@/modules/tasks/ui/TaskReturnButton.vue';
 import FullscreenSpinner from '@/shared/ui/FullscreenSpinner.vue';
-import { onMounted, provide } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { provide } from 'vue';
+import { useRoute } from 'vue-router';
 
 const route = useRoute()
-const router = useRouter()
-const { selectedTask, isLoading, completeTask, removeTask, returnTask, setSelectedTaskId } = useTaskDetails()
 
-onMounted(() => {
-  console.log(route.params)
-  if (typeof route.params?.id === 'string') {
-    setSelectedTaskId(route.params?.id)
-  }
-})
-
+const { data: selectedTask, isFetching } = useGetTaskDetailsQuery(typeof route.params?.id === 'string' ? route.params?.id : '')
+// isLoading -> крути при первом запросе
+// isFetchin -> крути всегда когда запрос отправляется
 provide(TASK_PROVIDE_KEYS.task, selectedTask)
-provide(TASK_PROVIDE_KEYS.completeTask, completeTask)
-provide(TASK_PROVIDE_KEYS.removeTask, removeTaskLocal)
-provide(TASK_PROVIDE_KEYS.returnTask, returnTask)
 
-async function removeTaskLocal(id: string) {
-  await removeTask(id)
-  router.replace('/tasks')
-}
 </script>
 
 <template>
@@ -47,10 +34,10 @@ async function removeTaskLocal(id: string) {
       <div class="buttons-container" v-if="selectedTask">
         <TaskCompleteButton />
         <TaskReturnButton />
-        <TaskRemoveButton />
+        <TaskRemoveButton :redirect-url="'/tasks'" />
       </div>
     </div>
-    <FullscreenSpinner :is-loading="isLoading" />
+    <FullscreenSpinner :is-loading="isFetching" />
   </div>
 </template>
 

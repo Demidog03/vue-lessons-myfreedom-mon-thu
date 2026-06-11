@@ -3,7 +3,7 @@ import type { CreateTaskBody } from "./tasks.api.types";
 
 async function getTasks() {
   const response = await axios.get('http://localhost:3000/tasks')
-  return response.data
+  return response.data.data
 }
 
 async function createTask(body: CreateTaskBody) {
@@ -25,7 +25,7 @@ async function changeTaskStatus(id: string, completed: boolean) {
 
 async function getTaskDetails(id: string) {
   const response = await axios.get(`http://localhost:3000/tasks/${id}`)
-  return response.data
+  return response.data.data
 }
 
 const tasksApi = {

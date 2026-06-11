@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import useTasks from '@/modules/tasks/composables/useTasks';
-import { TASK_PROVIDE_KEYS } from '@/modules/tasks/contants/tasks.constants';
+import useGetTasksQuery from '@/modules/tasks/queries/useGetTasksQuery';
+import type { Task } from '@/modules/tasks/types/tasks.types';
 import TaskForm from '@/modules/tasks/ui/TaskForm.vue';
 import TaskItem from '@/modules/tasks/ui/TaskItem.vue';
 import FullscreenSpinner from '@/shared/ui/FullscreenSpinner.vue';
 import RouterButton from '@/shared/ui/RouterButton.vue';
-import { provide } from 'vue';
+import { computed } from 'vue';
 
-const { tasks, isLoading, activeTasksLength, completedTasksLength, completeTask, createTask, removeTask, returnTask } = useTasks()
+const { data: tasks, isLoading, } = useGetTasksQuery()
 
-provide(TASK_PROVIDE_KEYS.completeTask, completeTask)
-provide(TASK_PROVIDE_KEYS.removeTask, removeTask)
-provide(TASK_PROVIDE_KEYS.returnTask, returnTask)
+const activeTasksLength = computed(() => tasks.value.filter((t: Task) => t.completed === false).length || 0)
+const completedTasksLength = computed(() => tasks.value.filter((t: Task) => t.completed === true).length || 0)
+
 </script>
 
 <template>
@@ -20,18 +20,19 @@ provide(TASK_PROVIDE_KEYS.returnTask, returnTask)
     <RouterButton to="/test" text="Перейти на тестовую страницу" />
     <section class="form-section">
       <h1>Todo App</h1>
-      <TaskForm @create-task="createTask" />
+      <TaskForm />
     </section>
     <section class="tasks-section">
       <p class="tasks-amount-task">Количество задач: {{ activeTasksLength }} активные, {{ completedTasksLength }}
         завершенные</p>
-      <p v-if="tasks.length <= 0" class="no-tasks-text">Нет задач...</p>
-      <ul v-if="tasks.length > 0" class="tasks-list">
+      <p v-if="tasks?.length <= 0" class="no-tasks-text">Нет задач...</p>
+      <ul v-if="tasks?.length > 0" class="tasks-list">
         <!-- v-for - директива для маппинга элементов -->
         <TaskItem v-for="task in tasks" v-bind:key="task.id" :task="task" />
       </ul>
     </section>
     <FullscreenSpinner :is-loading="isLoading" />
+    <!-- <button @click="refetch">refetch</button> -->
   </main>
 </template>
 

@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { v4 as uuidv4 } from "uuid";
-import type { Task } from '@/modules/tasks/types/tasks.types';
 import { computed, ref } from 'vue';
-
-const emits = defineEmits<{
-  createTask: [task: Task]
-}>()
+import useCreateTaskMutation from "../queries/useCreateTaskMutation";
 
 // two-way binding - двухстороннее привязка
 const taskInput = ref<string>('') // реактивная переменная
 const taskDescription = ref<string>('')
+
+const { mutate: createTask } = useCreateTaskMutation()
 
 const isInputEmpty = computed(() => !taskInput.value.trim())
 
@@ -20,14 +17,10 @@ function createTaskLocal() {
     return
   }
 
-  const newTask: Task = {
-    id: uuidv4(),
+  createTask({
     title: taskInput.value.trim(),
     description: taskDescription.value.trim() || null,
-    completed: false
-  }
-
-  emits('createTask', newTask)
+  })
 
   taskInput.value = '' // меняем реактивную переменную - ререндер произошел
   taskDescription.value = ''

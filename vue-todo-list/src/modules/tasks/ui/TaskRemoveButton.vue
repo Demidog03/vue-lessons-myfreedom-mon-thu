@@ -2,13 +2,28 @@
 import { inject } from 'vue';
 import type { Task } from '../types/tasks.types';
 import { TASK_PROVIDE_KEYS } from '../contants/tasks.constants';
+import useRemoveTaskMutation from '../queries/useRemoveTaskMutation';
+import { useRouter } from 'vue-router';
+
+defineProps<{
+  redirectUrl?: string
+}>()
+
+const router = useRouter()
 
 const task = inject<Task>(TASK_PROVIDE_KEYS.task)
-const removeTask = inject<(id: string) => void>(TASK_PROVIDE_KEYS.removeTask)
+const { mutate: removeTask } = useRemoveTaskMutation()
 </script>
 
 <template>
-  <button @click="() => (removeTask && task) && removeTask(task.id)" class="task-remove-btn">Удалить</button>
+  <button @click="() => {
+    if (task) {
+      removeTask(task.id)
+      if (redirectUrl) {
+        router.replace(redirectUrl)
+      }
+    }
+  }" class="task-remove-btn">Удалить</button>
 </template>
 
 <style scoped>

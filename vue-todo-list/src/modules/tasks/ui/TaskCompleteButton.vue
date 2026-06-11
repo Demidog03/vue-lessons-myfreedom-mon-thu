@@ -2,13 +2,14 @@
 import { inject } from 'vue';
 import type { Task } from '../types/tasks.types';
 import { TASK_PROVIDE_KEYS } from '../contants/tasks.constants';
+import useCompleteTaskMutation from '../queries/useCompleteTaskMutation';
 
 const task = inject<Task>(TASK_PROVIDE_KEYS.task)
-const completeTask = inject<(id: string) => void>(TASK_PROVIDE_KEYS.completeTask)
+const { mutate: completeTask } = useCompleteTaskMutation()
 </script>
 
 <template>
-  <button v-if="task?.completed === false" @click="() => (completeTask && task) && completeTask(task.id)"
+  <button v-if="task?.completed === false" @click="() => task && completeTask(task.id)"
     class="task-active-btn">Выполнить</button>
 </template>
 
